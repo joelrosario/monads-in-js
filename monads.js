@@ -9,12 +9,6 @@ function slice(a, start, len) {
         return b;
 }
 
-function printob(obj) {
-	for (var key in obj) {
-		sys.puts(key + ": " + obj[key]);
-	}
-}
-
 function apply_monad(monad, monad_bindings, real_bindings, fn) {
 	if(monad_bindings.length == 0)
 	{
@@ -36,7 +30,7 @@ function apply_monad(monad, monad_bindings, real_bindings, fn) {
 	}
 }
 
-exports._ = function (monad, bindings, fn) {
+exports.domonad = function (monad, bindings, fn) {
 	return apply_monad(monad, bindings, {}, fn);
 }
 
@@ -52,8 +46,6 @@ exports.maybe_m = {
 		return v;
 	}
 };
-
-var sys = require('sys');
 
 exports.maybe_t = function (monad) {
 	var new_monad = {};
