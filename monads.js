@@ -54,10 +54,7 @@ exports.maybe_t = function (monad) {
 		new_monad[key] = monad[key];
 	};
 
-	var zero = function () { return monad.to_monadic_value(null); }
-
-	if (monad.zero)
-		zero = monad.zero;
+	var zero = monad.zero ? monad.zero : function () { return monad.to_monadic_value(null); };
 
 	new_monad['bind'] = function (v, f) {
 		return monad.bind(v, function (val) {
