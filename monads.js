@@ -1,19 +1,6 @@
-function slice(a, start, len) {
-        var b = [];
-
-        for(var n = start; n < start + len; n++)
-        {
-                b[n - start] = a[n];
-        }
-
-        return b;
-}
-
 function apply_monad(monad, monad_bindings, real_bindings, fn) {
 	if(monad_bindings.length == 0)
-	{
 		return monad.to_monadic_value(fn(real_bindings));
-	}
 
 	var monad_binding = monad_bindings[0];
 
@@ -24,7 +11,7 @@ function apply_monad(monad, monad_bindings, real_bindings, fn) {
 				real_bindings[key] = val;
 
 				return apply_monad(monad,
-					slice(monad_bindings, 1, monad_bindings.length - 1),
+					monad_bindings.slice(1),
 					real_bindings,
 					fn);
 			});
@@ -48,13 +35,15 @@ exports.maybe_m = {
 	}
 };
 
+function new_object_based_on(obj) {
+	var derived_object = function () {};
+	derived_object.prototype = obj;
+	return new derived_object();
+}
+
 exports.maybe_t = function (monad) {
-	var new_monad = {};
-
-	for(var key in monad) {
-		new_monad[key] = monad[key];
-	};
-
+	var new_monad = new_object_based_on(monad);
+	
 	var zero = monad.zero ? monad.zero : function () { return monad.to_monadic_value(null); };
 
 	new_monad['bind'] = function (v, f) {
@@ -70,30 +59,11 @@ exports.maybe_t = function (monad) {
 }
 
 exports.sequence_m = {
-	add: function (arr1, arr2) {
-		var arr3 = [];
-
-		for(var n = 0; n < arr1.length; n++)
-		{
-			arr3[n] = arr1[n];
-		}
-
-		for(; n < arr1.length + arr2.length; n++)
-		{
-			arr3[n] = arr2[n - arr1.length];
-		}
-
-		return arr3;
-	},
-
 	bind: function (vals, f) {
-		var total = [];
-
-		for (var i in vals) {
-			total = this.add(total, f(vals[i]));
-		}
-
-		return total;
+		return [].concat.apply(vals.map(
+			function (val) {
+				return f(val);
+			}));
 	},
 
 	to_monadic_value: function (v) {
