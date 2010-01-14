@@ -18,7 +18,8 @@ function apply_monad(monad, monad_bindings, real_bindings, fn) {
 	var monad_binding = monad_bindings[0];
 
 	for(var key in monad_binding) {
-		return monad.bind((monad_binding[key])(real_bindings),
+		return monad.bind(
+			(monad_binding[key])(real_bindings),
 			function (val) {
 				real_bindings[key] = val;
 
